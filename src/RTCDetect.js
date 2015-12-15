@@ -19,6 +19,8 @@ RTCDetect.init = function (callback) {
     checkDeviceSupport(callback);
 };
 
+//TODO:判断是否支持getUserMedia, RTCPeerConnection, DataChannel, WebSocket等功能
+
 //TODO:根据浏览器和版本判断是否支持某项功能
 
 
