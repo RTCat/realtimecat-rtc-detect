@@ -14,8 +14,8 @@ RTCDetect.isMobileDevice = isMobileDevice;
 // "osName" is defined in "getOSName.js"
 RTCDetect.osName = osName;
 
-RTCDetect.load = function (callback) {
-    this.loadCallback = callback;
+RTCDetect.init = function (callback) {
+    this.initCallback = callback;
     checkDeviceSupport(callback);
 };
 

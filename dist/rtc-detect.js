@@ -2,7 +2,7 @@
 "use strict";
 
 // 初始化
-//-------------------------------------------------------------------------
+//===============================================================
 var navigator = window.navigator;
 
 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
@@ -363,8 +363,8 @@ RTCDetect.isMobileDevice = isMobileDevice;
 // "osName" is defined in "getOSName.js"
 RTCDetect.osName = osName;
 
-RTCDetect.load = function (callback) {
-    this.loadCallback = callback;
+RTCDetect.init = function (callback) {
+    this.initCallback = callback;
     checkDeviceSupport(callback);
 };
 

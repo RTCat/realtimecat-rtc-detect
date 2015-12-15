@@ -1,5 +1,5 @@
 // 初始化
-//-------------------------------------------------------------------------
+//===============================================================
 var navigator = window.navigator;
 
 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
