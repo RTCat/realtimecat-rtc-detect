@@ -15,22 +15,23 @@ var hasSpeakers = false;
 var hasWebcam = false;
 
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
-// todo: switch to enumerateDevices when landed in canary.
+// TODO: switch to enumerateDevices when landed in canary.
 function checkDeviceSupport(callback) {
     if (!canEnumerate) {
         return;
     }
 
-    // This method is useful only for Chrome!
-
+    // 自定义enumerateDevices方法, 当MediaStreamTrack.getSources可用时,用getSources方法
     if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
         navigator.enumerateDevices = window.MediaStreamTrack.getSources.bind(window.MediaStreamTrack);
     }
 
+    // 当navigator.enumerateDevices方法可用时,用这个方法
     if (!navigator.enumerateDevices && navigator.enumerateDevices) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
     }
 
+    // 当浏览器不支持enumerateDevices方法时,什么也不做
     if (!navigator.enumerateDevices) {
         if (callback) {
             callback();
@@ -112,4 +113,4 @@ function checkDeviceSupport(callback) {
 }
 
 // check for microphone/camera support!
-checkDeviceSupport();
+//checkDeviceSupport();

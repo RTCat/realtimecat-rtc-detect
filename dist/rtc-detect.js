@@ -7,7 +7,7 @@ var navigator = window.navigator;
 
 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
     // Firefox 38+ seems having support of enumerateDevices
-    navigator.enumerateDevices = function(callback) {
+    navigator.enumerateDevices = function (callback) {
         navigator.mediaDevices.enumerateDevices().then(callback);
     };
 }
@@ -23,7 +23,8 @@ if (typeof navigator !== 'undefined') {
     }
 } else {
     navigator = {
-        getUserMedia: function() { },
+        getUserMedia: function () {
+        },
         userAgent: 'Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45'
     };
 }
@@ -246,22 +247,23 @@ var hasSpeakers = false;
 var hasWebcam = false;
 
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
-// todo: switch to enumerateDevices when landed in canary.
+// TODO: switch to enumerateDevices when landed in canary.
 function checkDeviceSupport(callback) {
     if (!canEnumerate) {
         return;
     }
 
-    // This method is useful only for Chrome!
-
+    // 自定义enumerateDevices方法, 当MediaStreamTrack.getSources可用时,用getSources方法
     if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
         navigator.enumerateDevices = window.MediaStreamTrack.getSources.bind(window.MediaStreamTrack);
     }
 
+    // 当navigator.enumerateDevices方法可用时,用这个方法
     if (!navigator.enumerateDevices && navigator.enumerateDevices) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
     }
 
+    // 当浏览器不支持enumerateDevices方法时,什么也不做
     if (!navigator.enumerateDevices) {
         if (callback) {
             callback();
@@ -343,7 +345,7 @@ function checkDeviceSupport(callback) {
 }
 
 // check for microphone/camera support!
-checkDeviceSupport();
+//checkDeviceSupport();
 
 var RTCDetect = window.RTCDetect = {};
 
@@ -355,15 +357,16 @@ RTCDetect.browser = getBrowserInfo();
 // RTCDetect.isChrome || RTCDetect.isFirefox || RTCDetect.isOpera etc
 RTCDetect.browser['is' + RTCDetect.browser.name] = true;
 
-RTCDetect.isMobileDevice = isMobileDevice; // "isMobileDevice" boolean is defined in "getBrowserInfo.js"
+// "isMobileDevice" boolean is defined in "getBrowserInfo.js"
+RTCDetect.isMobileDevice = isMobileDevice;
 
-RTCDetect.osName = osName; // "osName" is defined in "getOSName.js"
+// "osName" is defined in "getOSName.js"
+RTCDetect.osName = osName;
 
-RTCDetect.MediaDevices = MediaDevices;
-RTCDetect.hasMicrophone = hasMicrophone;
-RTCDetect.hasSpeakers = hasSpeakers;
-RTCDetect.hasWebcam = hasWebcam;
-
+RTCDetect.load = function (callback) {
+    this.loadCallback = callback;
+    checkDeviceSupport(callback);
+};
 
 //TODO:根据浏览器和版本判断是否支持某项功能
 }(window));
