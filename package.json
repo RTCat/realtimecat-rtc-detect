@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "scripts": {
     "build": "gulp",
-    "test": "nodemon server.js"
+    "test": "nodemon test/server.js"
   },
   "keywords": [
     "realtimecat",

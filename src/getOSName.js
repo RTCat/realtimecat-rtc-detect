@@ -53,7 +53,7 @@ if (isMobile.any()) {
     }
 
     if (navigator.appVersion.indexOf('Mac') !== -1) {
-        osName = 'MacOS';
+        osName = 'OSX';
     }
 
     if (navigator.appVersion.indexOf('X11') !== -1) {
