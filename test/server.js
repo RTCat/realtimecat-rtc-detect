@@ -27,7 +27,7 @@ function serverHandler(request, response) {
     }
 
 
-    fs.readFile(filename, 'binary', function(err, file) {
+    fs.readFile(filename, 'binary', function (err, file) {
         if (err) {
             response.writeHead(500, {
                 'Content-Type': 'text/plain'
@@ -53,7 +53,7 @@ if (isUseHTTPs) {
     app = server.createServer(options, serverHandler);
 } else app = server.createServer(serverHandler);
 
-app = app.listen(process.env.PORT || 9001, process.env.IP || "0.0.0.0", function() {
+app = app.listen(process.env.PORT || 9001, process.env.IP || "0.0.0.0", function () {
     var addr = app.address();
     console.log("Server listening at", addr.address + ":" + addr.port);
 });

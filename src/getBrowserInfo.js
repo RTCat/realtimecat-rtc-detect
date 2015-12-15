@@ -1,3 +1,6 @@
+//Get Browser Info
+//-----------------------------------------------------------------------------------------------
+
 // For mobile devices
 var isMobileDevice = !!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i);
 

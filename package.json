@@ -1,7 +1,7 @@
 {
   "name": "rtc-detect",
   "version": "0.1.0",
-  "description": "detect browser info and webrtc support",
+  "description": "detect browsers' info and webrtc compatibility",
   "main": "gulpfile.js",
   "scripts": {
     "build": "gulp",
@@ -10,7 +10,8 @@
   "keywords": [
     "realtimecat",
     "detect",
-    "browser"
+    "browser",
+    "webrtc"
   ],
   "author": "Yi Kai",
   "license": "ISC",

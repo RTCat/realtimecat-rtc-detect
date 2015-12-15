@@ -1,7 +1,34 @@
 (function(window) {
 "use strict";
 
-//TODO:获取各浏览器的getUserMedia并统一
+// 初始化
+//-------------------------------------------------------------------------
+var navigator = window.navigator;
+
+if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    // Firefox 38+ seems having support of enumerateDevices
+    navigator.enumerateDevices = function(callback) {
+        navigator.mediaDevices.enumerateDevices().then(callback);
+    };
+}
+
+//统一各浏览器的getUserMedia
+if (typeof navigator !== 'undefined') {
+    if (typeof navigator.webkitGetUserMedia !== 'undefined') {
+        navigator.getUserMedia = navigator.webkitGetUserMedia;
+    }
+
+    if (typeof navigator.mozGetUserMedia !== 'undefined') {
+        navigator.getUserMedia = navigator.mozGetUserMedia;
+    }
+} else {
+    navigator = {
+        getUserMedia: function() { },
+        userAgent: 'Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45'
+    };
+}
+//Get Browser Info
+//-----------------------------------------------------------------------------------------------
 
 // For mobile devices
 var isMobileDevice = !!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i);
@@ -133,6 +160,9 @@ function getBrowserInfo() {
     };
 }
 
+//Get OS Name
+//-----------------------------------------------------------------------------------------------
+
 var osName = 'Unknown OS';
 
 var isMobile = {
@@ -199,7 +229,125 @@ if (isMobile.any()) {
         osName = 'Linux';
     }
 }
+var MediaDevices = [];
+
+// Media Devices detection
+var canEnumerate = false;
+
+//global MediaStreamTrack:true
+if (typeof MediaStreamTrack !== 'undefined' && 'getSources' in MediaStreamTrack) {
+    canEnumerate = true;
+} else if (navigator.mediaDevices && !!navigator.mediaDevices.enumerateDevices) {
+    canEnumerate = true;
+}
+
+var hasMicrophone = false;
+var hasSpeakers = false;
+var hasWebcam = false;
+
+// http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
+// todo: switch to enumerateDevices when landed in canary.
+function checkDeviceSupport(callback) {
+    if (!canEnumerate) {
+        return;
+    }
+
+    // This method is useful only for Chrome!
+
+    if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
+        navigator.enumerateDevices = window.MediaStreamTrack.getSources.bind(window.MediaStreamTrack);
+    }
+
+    if (!navigator.enumerateDevices && navigator.enumerateDevices) {
+        navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
+    }
+
+    if (!navigator.enumerateDevices) {
+        if (callback) {
+            callback();
+        }
+        return;
+    }
+
+    MediaDevices = [];
+    navigator.enumerateDevices(function (devices) {
+        devices.forEach(function (_device) {
+            var device = {};
+            for (var d in _device) {
+                device[d] = _device[d];
+            }
+
+            // if it is MediaStreamTrack.getSources
+            if (device.kind === 'audio') {
+                device.kind = 'audioinput';
+            }
+
+            if (device.kind === 'video') {
+                device.kind = 'videoinput';
+            }
+
+            var skip;
+            MediaDevices.forEach(function (d) {
+                if (d.id === device.id && d.kind === device.kind) {
+                    skip = true;
+                }
+            });
+
+            if (skip) {
+                return;
+            }
+
+            if (!device.deviceId) {
+                device.deviceId = device.id;
+            }
+
+            if (!device.id) {
+                device.id = device.deviceId;
+            }
+
+            if (!device.label) {
+                device.label = 'Please invoke getUserMedia once.';
+                if (!isHTTPs) {
+                    device.label = 'HTTPs is required to get label of this ' + device.kind + ' device.';
+                }
+            }
+
+            if (device.kind === 'audioinput') {
+                hasMicrophone = true;
+            }
+
+            if (device.kind === 'audiooutput') {
+                hasSpeakers = true;
+            }
+
+            if (device.kind === 'videoinput') {
+                hasWebcam = true;
+            }
+
+            // there is no 'videoouput' in the spec.
+
+            MediaDevices.push(device);
+        });
+
+        if (typeof RTCDetect !== 'undefined') {
+            RTCDetect.MediaDevices = MediaDevices;
+            RTCDetect.hasMicrophone = hasMicrophone;
+            RTCDetect.hasSpeakers = hasSpeakers;
+            RTCDetect.hasWebcam = hasWebcam;
+        }
+
+        if (callback) {
+            callback();
+        }
+    });
+}
+
+// check for microphone/camera support!
+checkDeviceSupport();
+
 var RTCDetect = window.RTCDetect = {};
+
+var isHTTPs = location.protocol === 'https:';
 
 // RTCDetect.browser.name || RTCDetect.browser.version || RTCDetect.browser.fullVersion
 RTCDetect.browser = getBrowserInfo();
@@ -210,6 +358,12 @@ RTCDetect.browser['is' + RTCDetect.browser.name] = true;
 RTCDetect.isMobileDevice = isMobileDevice; // "isMobileDevice" boolean is defined in "getBrowserInfo.js"
 
 RTCDetect.osName = osName; // "osName" is defined in "getOSName.js"
+
+RTCDetect.MediaDevices = MediaDevices;
+RTCDetect.hasMicrophone = hasMicrophone;
+RTCDetect.hasSpeakers = hasSpeakers;
+RTCDetect.hasWebcam = hasWebcam;
+
 
 //TODO:根据浏览器和版本判断是否支持某项功能
 }(window));

@@ -4,7 +4,7 @@ var iife = require("gulp-iife");
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
-var scripts = ['./src/init.js','./src/getBrowserInfo.js', './src/getOSName.js', './src/RTCDetect.js'];
+var scripts = ['./src/init.js','./src/getBrowserInfo.js', './src/getOSName.js', './src/checkDeviceSupport.js', './src/RTCDetect.js'];
 
 gulp.task('concat', function () {
     return gulp.src(scripts)

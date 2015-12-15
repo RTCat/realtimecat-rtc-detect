@@ -7,5 +7,20 @@
 </head>
 <body>
 
+<script>
+    var output = 'Detecting browsers by RTCDetect:<hr>';
+    output += 'Browser: ' + RTCDetect.browser.name + '<br>';
+    output += 'Version: ' + RTCDetect.browser.version + '<br>';
+    output += 'Full Version: ' + RTCDetect.browser.fullVersion + '<br>';
+    output += 'OS Name: ' + RTCDetect.osName + '<br>';
+    output += 'Media Devices:' + '<br>';
+    RTCDetect.MediaDevices.forEach(function (item) {
+        for(var i in item){
+            output += item[i] +'<br>';
+        }
+    });
+
+    document.body.innerHTML = output;
+</script>
 </body>
 </html>
