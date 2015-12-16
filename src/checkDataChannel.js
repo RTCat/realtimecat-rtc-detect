@@ -30,5 +30,6 @@ function checkDataChannel() {
                 && window.DataChannel !== undefined;
         }
     }());
+
     return dataChannelSupport;
 }

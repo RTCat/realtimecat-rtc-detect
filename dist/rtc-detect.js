@@ -388,6 +388,7 @@ function checkDataChannel() {
                 && window.DataChannel !== undefined;
         }
     }());
+
     return dataChannelSupport;
 }
 
@@ -422,7 +423,12 @@ RTCDetect.dataChannelSupport = checkDataChannel();
 
 //TODO:检测是否支持屏幕分享功能
 
-//TODO:检测是否支持WebRTC
+//TODO:检测是否支持RTCat
+var RTCatSupport = false;
+if(RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera){
+    RTCatSupport = true;
+}
+RTCDetect.RTCatSupport = RTCatSupport;
 
 // ORTC相关
 //==================================
