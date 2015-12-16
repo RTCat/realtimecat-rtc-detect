@@ -8,21 +8,29 @@
 <body>
 
 <script>
-    RTCDetect.init(function () {
+    RTCDetect.init(function (error) {
+        if(error){
+            console.log(error)
+        }
         var output = 'Detecting browsers by RTCDetect:<hr>';
         output += 'Browser: ' + RTCDetect.browser.name + '<br>';
         output += 'Version: ' + RTCDetect.browser.version + '<br>';
         output += 'Full Version: ' + RTCDetect.browser.fullVersion + '<br>';
         output += 'OS Name: ' + RTCDetect.osName + '<br>';
+        output += 'Is GetUserMedia Supported: ' + RTCDetect.getUserMediaSupport + '<br>';
+        output += 'Is RTCPeerConnection Supported: ' + RTCDetect.RTCPeerConnectionSupport + '<br>';
+        output += 'Is ORTC Supported: ' + RTCDetect.ORTCSupport + '<br>';
         output += 'Has Microphone:' + RTCDetect.hasMicrophone + "<br>";
         output += 'Has Speakers:' + RTCDetect.hasSpeakers + "<br>";
         output += 'Has Webcam:' + RTCDetect.hasWebcam + "<br>";
         output += 'Media Devices:' + '<br>';
+        output += '<pre>';
         RTCDetect.MediaDevices.forEach(function (item) {
             for (var i in item) {
                 output += i +": "+ item[i] + '<br>';
             }
         });
+        output+='</pre>';
 
         document.body.innerHTML = output;
     });

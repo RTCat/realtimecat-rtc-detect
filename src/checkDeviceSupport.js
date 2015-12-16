@@ -1,25 +1,20 @@
 var MediaDevices = [];
 
-// Media Devices detection
-var canEnumerate = false;
-
-//global MediaStreamTrack:true
-if (typeof MediaStreamTrack !== 'undefined' && 'getSources' in MediaStreamTrack) {
-    canEnumerate = true;
-} else if (navigator.mediaDevices && !!navigator.mediaDevices.enumerateDevices) {
-    canEnumerate = true;
-}
-
 var hasMicrophone = false;
 var hasSpeakers = false;
 var hasWebcam = false;
 
+if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    // Firefox 38+, Microsoft Edge, and Chrome 44+ seems having support of enumerateDevices
+    navigator.enumerateDevices = function (callback) {
+        navigator.mediaDevices.enumerateDevices().then(callback);
+    };
+    //TODO: Microsoft Edge上此方法有bug
+}
+
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
 // TODO: switch to enumerateDevices when landed in canary.
 function checkDeviceSupport(callback) {
-    if (!canEnumerate) {
-        return;
-    }
 
     // 自定义enumerateDevices方法, 当MediaStreamTrack.getSources可用时,用getSources方法
     if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
@@ -31,10 +26,18 @@ function checkDeviceSupport(callback) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
     }
 
-    // 当浏览器不支持enumerateDevices方法时,什么也不做
+    // 当浏览器不支持任何一种enumerateDevices方法时,抛出错误
     if (!navigator.enumerateDevices) {
+        if (typeof RTCDetect !== 'undefined') {
+            RTCDetect.MediaDevices = MediaDevices;
+            RTCDetect.hasMicrophone = hasMicrophone;
+            RTCDetect.hasSpeakers = hasSpeakers;
+            RTCDetect.hasWebcam = hasWebcam;
+        }
         if (callback) {
-            callback();
+            callback(new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.'))
+        } else {
+            throw new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.');
         }
         return;
     }
@@ -107,10 +110,7 @@ function checkDeviceSupport(callback) {
         }
 
         if (callback) {
-            callback();
+            callback(null);
         }
     });
 }
-
-// check for microphone/camera support!
-//checkDeviceSupport();

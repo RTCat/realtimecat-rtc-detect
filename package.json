@@ -2,7 +2,7 @@
   "name": "rtc-detect",
   "version": "0.1.0",
   "description": "detect browsers' info and webrtc compatibility",
-  "main": "gulpfile.js",
+  "main": "./dist/rtc-detect.min.js",
   "scripts": {
     "build": "gulp",
     "test": "nodemon test/server.js"

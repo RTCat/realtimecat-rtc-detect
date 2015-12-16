@@ -1,59 +1,8 @@
 (function(window) {
 "use strict";
 
-// 初始化
-//===============================================================
-var navigator = window.navigator;
-
-if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-    // Firefox 38+ seems having support of enumerateDevices
-    navigator.enumerateDevices = function (callback) {
-        navigator.mediaDevices.enumerateDevices().then(callback);
-    };
-}
-
-//统一各浏览器的getUserMedia
-if (typeof navigator !== 'undefined') {
-    if (typeof navigator.webkitGetUserMedia !== 'undefined') {
-        navigator.getUserMedia = navigator.webkitGetUserMedia;
-    }
-
-    if (typeof navigator.mozGetUserMedia !== 'undefined') {
-        navigator.getUserMedia = navigator.mozGetUserMedia;
-    }
-} else {
-    navigator = {
-        getUserMedia: function () {
-        },
-        userAgent: 'Fake/5.0 (FakeOS) AppleWebKit/123 (KHTML, like Gecko) Fake/12.3.4567.89 Fake/123.45'
-    };
-}
 //Get Browser Info
 //-----------------------------------------------------------------------------------------------
-
-// For mobile devices
-var isMobileDevice = !!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i);
-
-// MS Edge
-var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
-// 国产浏览器
-var isQQ = /QQBrowser/.test(navigator.userAgent);
-var isSougou = /MetaSr/.test(navigator.userAgent);
-var isBaidu = /BIDUBrowser/.test(navigator.userAgent);
-var isLiebao = _testExternal(/^liebao/i, 0);
-// TODO:360浏览器
-var isEE360 = false;
-var isSE360 = false;
-
-function _testExternal(reg, type) {
-    var external = window.external || {};
-    for (var i in external) {
-        if (reg.test(type ? external[i] : i)) {
-            return true;
-        }
-    }
-    return false;
-}
 
 function getBrowserInfo() {
     var nVer = navigator.appVersion;
@@ -112,6 +61,27 @@ function getBrowserInfo() {
         }
     }
 
+    // MS Edge
+    var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
+    // 国产浏览器
+    var isQQ = /QQBrowser/.test(navigator.userAgent);
+    var isSougou = /MetaSr/.test(navigator.userAgent);
+    var isBaidu = /BIDUBrowser/.test(navigator.userAgent);
+    var isLiebao = _testExternal(/^liebao/i, 0);
+    // TODO:360浏览器
+    var isEE360 = false;
+    var isSE360 = false;
+
+    function _testExternal(reg, type) {
+        var external = window.external || {};
+        for (var i in external) {
+            if (reg.test(type ? external[i] : i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     if (isEdge) {
         browserName = 'Edge';
         // fullVersion = navigator.userAgent.split('Edge/')[1];
@@ -163,95 +133,93 @@ function getBrowserInfo() {
 
 //Get OS Name
 //-----------------------------------------------------------------------------------------------
+function getOSName() {
+    var osName = 'Unknown OS';
 
-var osName = 'Unknown OS';
+    var isMobile = {
+        Android: function () {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry: function () {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS: function () {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera: function () {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows: function () {
+            return navigator.userAgent.match(/IEMobile/i);
+        },
+        any: function () {
+            return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+        },
+        getOsName: function () {
+            var osName = 'Unknown OS';
+            if (isMobile.Android()) {
+                osName = 'Android';
+            }
 
-var isMobile = {
-    Android: function () {
-        return navigator.userAgent.match(/Android/i);
-    },
-    BlackBerry: function () {
-        return navigator.userAgent.match(/BlackBerry/i);
-    },
-    iOS: function () {
-        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-    },
-    Opera: function () {
-        return navigator.userAgent.match(/Opera Mini/i);
-    },
-    Windows: function () {
-        return navigator.userAgent.match(/IEMobile/i);
-    },
-    any: function () {
-        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
-    },
-    getOsName: function () {
-        var osName = 'Unknown OS';
-        if (isMobile.Android()) {
-            osName = 'Android';
+            if (isMobile.BlackBerry()) {
+                osName = 'BlackBerry';
+            }
+
+            if (isMobile.iOS()) {
+                osName = 'iOS';
+            }
+
+            if (isMobile.Opera()) {
+                osName = 'Opera Mini';
+            }
+
+            if (isMobile.Windows()) {
+                osName = 'Windows';
+            }
+
+            return osName;
         }
+    };
 
-        if (isMobile.BlackBerry()) {
-            osName = 'BlackBerry';
-        }
-
-        if (isMobile.iOS()) {
-            osName = 'iOS';
-        }
-
-        if (isMobile.Opera()) {
-            osName = 'Opera Mini';
-        }
-
-        if (isMobile.Windows()) {
+    if (isMobile.any()) {
+        osName = isMobile.getOsName();
+    } else {
+        if (navigator.appVersion.indexOf('Win') !== -1) {
             osName = 'Windows';
         }
 
-        return osName;
-    }
-};
+        if (navigator.appVersion.indexOf('Mac') !== -1) {
+            osName = 'OSX';
+        }
 
-if (isMobile.any()) {
-    osName = isMobile.getOsName();
-} else {
-    if (navigator.appVersion.indexOf('Win') !== -1) {
-        osName = 'Windows';
-    }
+        if (navigator.appVersion.indexOf('X11') !== -1) {
+            osName = 'UNIX';
+        }
 
-    if (navigator.appVersion.indexOf('Mac') !== -1) {
-        osName = 'OSX';
+        if (navigator.appVersion.indexOf('Linux') !== -1) {
+            osName = 'Linux';
+        }
     }
 
-    if (navigator.appVersion.indexOf('X11') !== -1) {
-        osName = 'UNIX';
-    }
-
-    if (navigator.appVersion.indexOf('Linux') !== -1) {
-        osName = 'Linux';
-    }
+    return osName;
 }
 var MediaDevices = [];
-
-// Media Devices detection
-var canEnumerate = false;
-
-//global MediaStreamTrack:true
-if (typeof MediaStreamTrack !== 'undefined' && 'getSources' in MediaStreamTrack) {
-    canEnumerate = true;
-} else if (navigator.mediaDevices && !!navigator.mediaDevices.enumerateDevices) {
-    canEnumerate = true;
-}
 
 var hasMicrophone = false;
 var hasSpeakers = false;
 var hasWebcam = false;
 
+if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    // Firefox 38+, Microsoft Edge, and Chrome 44+ seems having support of enumerateDevices
+    navigator.enumerateDevices = function (callback) {
+        navigator.mediaDevices.enumerateDevices().then(callback);
+    };
+    //TODO: Microsoft Edge上此方法有bug
+}
+
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
 // TODO: switch to enumerateDevices when landed in canary.
 function checkDeviceSupport(callback) {
-    if (!canEnumerate) {
-        return;
-    }
 
     // 自定义enumerateDevices方法, 当MediaStreamTrack.getSources可用时,用getSources方法
     if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
@@ -263,10 +231,18 @@ function checkDeviceSupport(callback) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
     }
 
-    // 当浏览器不支持enumerateDevices方法时,什么也不做
+    // 当浏览器不支持任何一种enumerateDevices方法时,抛出错误
     if (!navigator.enumerateDevices) {
+        if (typeof RTCDetect !== 'undefined') {
+            RTCDetect.MediaDevices = MediaDevices;
+            RTCDetect.hasMicrophone = hasMicrophone;
+            RTCDetect.hasSpeakers = hasSpeakers;
+            RTCDetect.hasWebcam = hasWebcam;
+        }
         if (callback) {
-            callback();
+            callback(new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.'))
+        } else {
+            throw new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.');
         }
         return;
     }
@@ -339,13 +315,10 @@ function checkDeviceSupport(callback) {
         }
 
         if (callback) {
-            callback();
+            callback(null);
         }
     });
 }
-
-// check for microphone/camera support!
-//checkDeviceSupport();
 
 var RTCDetect = window.RTCDetect = {};
 
@@ -357,16 +330,85 @@ RTCDetect.browser = getBrowserInfo();
 // RTCDetect.isChrome || RTCDetect.isFirefox || RTCDetect.isOpera etc
 RTCDetect.browser['is' + RTCDetect.browser.name] = true;
 
-// "isMobileDevice" boolean is defined in "getBrowserInfo.js"
-RTCDetect.isMobileDevice = isMobileDevice;
+// 获取操作系统名称
+RTCDetect.osName = getOSName();
 
-// "osName" is defined in "getOSName.js"
-RTCDetect.osName = osName;
+// WebRTC相关检测
+//===================================
+//检测是否支持getUserMedia
+var getUserMediaSupport = false;
+if (navigator.getUserMedia) {
+    getUserMediaSupport = true;
+} else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    getUserMediaSupport = true;
+}
+if (RTCDetect.browser.isChrome && RTCDetect.browser.version >= 46 && !isHTTPs) {
+    RTCDetect.getUserMediaSupport = 'Requires HTTPs';
+}
+RTCDetect.getUserMediaSupport = getUserMediaSupport;
 
+//检测是否支持RTCPeerConnection
+var RTCPeerConnectionSupport = false;
+['RTCPeerConnection', 'webkitRTCPeerConnection', 'mozRTCPeerConnection'].forEach(function (item) {
+    if (RTCPeerConnectionSupport) {
+        return;
+    }
+
+    if (item in window) {
+        RTCPeerConnectionSupport = true;
+    }
+});
+
+RTCDetect.RTCPeerConnectionSupport = RTCPeerConnectionSupport;
+
+//TODO:检测是否支持DataChannel
+var dataChannelSupport = false;
+//used to have only one interface
+window.RTCPeerConnection = window.RTCPeerConnection
+    || window.webkitRTCPeerConnection
+    || window.mozRTCPeerConnection;
+window.RTCSessionDescription = window.RTCSessionDescription
+    || window.webkitRTCSessionDescription
+    || window.mozRTCSessionDescription;
+window.RTCIceCandidate = window.RTCIceCandidate
+    || window.webkitRTCIceCandidate
+    || window.mozRTCIceCandidate;
+
+(function () {
+    if (!!window.webkitRTCPeerConnection) { //must be chrome
+        var testPC = new window.RTCPeerConnection({iceServers: [{url: "stun:stunserver.org:3478"}]}, {optional: [{RtpDataChannels: true}]}),
+            dc;
+        if (testPC && testPC.createDataChannel) {
+            //Chrome doesn't supoort reliable DataChannels yet
+            dc = testPC.createDataChannel("testDataChannel", {reliable: false});
+            if (!!dc) {
+                dataChannelSupport = true;
+                dc.close();
+            }
+        }
+        testPC.close();
+    }
+    else {
+        dataChannelSupport = window.RTCPeerConnection !== undefined
+            && window.DataChannel !== undefined;
+    }
+}());
+
+//TODO:检测是否支持WebSocket
+
+//TODO:检测是否支持屏幕分享功能
+
+//检测是否支持WebRTC
+var WebRTCSupport = false;
+RTCDetect.WebRTCSupport = WebRTCSupport;
+
+// ORTC相关
+//==================================
+//TODO:检测是否支持ORTC
+RTCDetect.ORTCSupport = typeof RTCIceGatherer !== 'undefined';
+
+//TODO:初始化
 RTCDetect.init = function (callback) {
-    this.initCallback = callback;
     checkDeviceSupport(callback);
 };
-
-//TODO:根据浏览器和版本判断是否支持某项功能
 }(window));

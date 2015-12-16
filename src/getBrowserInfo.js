@@ -1,30 +1,6 @@
 //Get Browser Info
 //-----------------------------------------------------------------------------------------------
 
-// For mobile devices
-var isMobileDevice = !!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i);
-
-// MS Edge
-var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
-// 国产浏览器
-var isQQ = /QQBrowser/.test(navigator.userAgent);
-var isSougou = /MetaSr/.test(navigator.userAgent);
-var isBaidu = /BIDUBrowser/.test(navigator.userAgent);
-var isLiebao = _testExternal(/^liebao/i, 0);
-// TODO:360浏览器
-var isEE360 = false;
-var isSE360 = false;
-
-function _testExternal(reg, type) {
-    var external = window.external || {};
-    for (var i in external) {
-        if (reg.test(type ? external[i] : i)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 function getBrowserInfo() {
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -80,6 +56,27 @@ function getBrowserInfo() {
         if (browserName.toLowerCase() === browserName.toUpperCase()) {
             browserName = navigator.appName;
         }
+    }
+
+    // MS Edge
+    var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
+    // 国产浏览器
+    var isQQ = /QQBrowser/.test(navigator.userAgent);
+    var isSougou = /MetaSr/.test(navigator.userAgent);
+    var isBaidu = /BIDUBrowser/.test(navigator.userAgent);
+    var isLiebao = _testExternal(/^liebao/i, 0);
+    // TODO:360浏览器
+    var isEE360 = false;
+    var isSE360 = false;
+
+    function _testExternal(reg, type) {
+        var external = window.external || {};
+        for (var i in external) {
+            if (reg.test(type ? external[i] : i)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     if (isEdge) {

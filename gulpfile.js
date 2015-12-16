@@ -9,6 +9,7 @@ var scripts = [
     './src/getBrowserInfo.js',
     './src/getOSName.js',
     './src/checkDeviceSupport.js',
+    './src/checkGetUserMedia',
     './src/RTCDetect.js'
 ];
 
