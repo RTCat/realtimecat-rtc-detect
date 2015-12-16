@@ -9,7 +9,9 @@ var scripts = [
     './src/getBrowserInfo.js',
     './src/getOSName.js',
     './src/checkDeviceSupport.js',
-    './src/checkGetUserMedia',
+    './src/checkGetUserMedia.js',
+    './src/checkRTCPeerConnection.js',
+    './src/checkDataChannel.js',
     './src/RTCDetect.js'
 ];
 
