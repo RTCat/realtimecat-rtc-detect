@@ -25,13 +25,14 @@ RTCDetect.RTCPeerConnectionSupport = checkRTCPeerConnection();
 //检测是否支持DataChannel
 RTCDetect.dataChannelSupport = checkDataChannel();
 
-//TODO:检测是否支持WebSocket
+//检测是否支持WebSocket
+RTCDetect.WebSocketSupport = 'WebSocket' in window && 2 === window.WebSocket.CLOSING;
 
 //TODO:检测是否支持屏幕分享功能
 
 //TODO:检测是否支持RTCat
 var RTCatSupport = false;
-if(RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera){
+if (RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera) {
     RTCatSupport = true;
 }
 RTCDetect.RTCatSupport = RTCatSupport;

@@ -9,18 +9,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
     navigator.enumerateDevices = function (callback) {
         navigator.mediaDevices.enumerateDevices().then(callback);
     };
-    //TODO: Microsoft Edge上此方法有bug
+    //TODO: Microsoft Edge上enumerateDevices方法有bug
 }
 
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
 // TODO: switch to enumerateDevices when landed in canary.
 function checkDeviceSupport(callback) {
 
-    // 自定义enumerateDevices方法, 当MediaStreamTrack.getSources可用时,用getSources方法
+    // enumerateDevices方法shim
+    // 当MediaStreamTrack.getSources可用时,用getSources方法
     if (!navigator.enumerateDevices && window.MediaStreamTrack && window.MediaStreamTrack.getSources) {
         navigator.enumerateDevices = window.MediaStreamTrack.getSources.bind(window.MediaStreamTrack);
     }
-
     // 当navigator.enumerateDevices方法可用时,用这个方法
     if (!navigator.enumerateDevices && navigator.enumerateDevices) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);

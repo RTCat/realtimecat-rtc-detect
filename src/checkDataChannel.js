@@ -1,5 +1,6 @@
 function checkDataChannel() {
     var dataChannelSupport = false;
+
     //used to have only one interface
     window.RTCPeerConnection = window.RTCPeerConnection
         || window.webkitRTCPeerConnection
