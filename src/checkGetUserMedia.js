@@ -1,5 +1,6 @@
 //检测是否支持getUserMedia
 function checkGetUserMedia() {
+
     var getUserMediaSupport = false;
 
     if (typeof navigator.webkitGetUserMedia !== 'undefined') {

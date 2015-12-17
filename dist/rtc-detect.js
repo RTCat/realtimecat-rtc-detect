@@ -322,6 +322,7 @@ function checkDeviceSupport(callback) {
 
 //检测是否支持getUserMedia
 function checkGetUserMedia() {
+
     var getUserMediaSupport = false;
 
     if (typeof navigator.webkitGetUserMedia !== 'undefined') {
@@ -423,7 +424,16 @@ RTCDetect.dataChannelSupport = checkDataChannel();
 //检测是否支持WebSocket
 RTCDetect.WebSocketSupport = 'WebSocket' in window && 2 === window.WebSocket.CLOSING;
 
-//TODO:检测是否支持屏幕分享功能
+//检测是否支持屏幕分享功能
+//目前只有https下的35版本以上的chrome可以分享屏幕
+var screenCaputringSupport = false;
+if (RTCDetect.browser.isChrome && RTCDetect.browser.version >= 35) {
+    screenCaputringSupport = true;
+}
+if (!isHTTPs) {
+    screenCaputringSupport = false;
+}
+RTCDetect.screenCaputringSupport = screenCaputringSupport;
 
 //TODO:检测是否支持RTCat
 var RTCatSupport = false;
