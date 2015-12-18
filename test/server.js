@@ -6,40 +6,40 @@ var server = require(isUseHTTPs ? 'https' : 'http'),
     fs = require('fs');
 
 function serverHandler(request, response) {
-    var uri = url.parse(request.url).pathname,
-        filename = path.join(process.cwd(), uri);
+    var uri = url.parse(request.url).pathname
+        , filename = path.join(process.cwd(), uri);
 
-    var stats;
+    var contentTypesByExtension = {
+        '.html': "text/html",
+        '.css':  "text/css",
+        '.js':   "text/javascript"
+    };
 
-    try {
-        stats = fs.lstatSync(filename);
-    } catch (e) {
-        response.writeHead(404, {
-            'Content-Type': 'text/plain'
-        });
-        response.write('404 Not Found: ' + path.join('/', uri) + '\n');
-        response.end();
-        return;
-    }
-
-    if (fs.statSync(filename).isDirectory()) {
-        filename += '/index.html';
-    }
-
-
-    fs.readFile(filename, 'binary', function (err, file) {
-        if (err) {
-            response.writeHead(500, {
-                'Content-Type': 'text/plain'
-            });
-            response.write('404 Not Found: ' + path.join('/', uri) + '\n');
+    fs.exists(filename, function(exists) {
+        if(!exists) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.write("404 Not Found\n");
             response.end();
             return;
         }
 
-        response.writeHead(200);
-        response.write(file, 'binary');
-        response.end();
+        if (fs.statSync(filename).isDirectory()) filename += '/index.html';
+
+        fs.readFile(filename, "binary", function(err, file) {
+            if(err) {
+                response.writeHead(500, {"Content-Type": "text/plain"});
+                response.write(err + "\n");
+                response.end();
+                return;
+            }
+
+            var headers = {};
+            var contentType = contentTypesByExtension[path.extname(filename)];
+            if (contentType) headers["Content-Type"] = contentType;
+            response.writeHead(200, headers);
+            response.write(file, "binary");
+            response.end();
+        });
     });
 }
 

@@ -1,1 +1,4 @@
 # RTC Detect
+
+## Usage
+
