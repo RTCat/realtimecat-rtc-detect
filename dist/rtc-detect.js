@@ -1,8 +1,8 @@
 (function(window) {
 "use strict";
 
-//Get Browser Info
-//-----------------------------------------------------------------------------------------------
+// 获取浏览器信息 UA sniffing
+//==============================================
 
 function getBrowserInfo() {
     var nVer = navigator.appVersion;
@@ -131,8 +131,8 @@ function getBrowserInfo() {
     };
 }
 
-//Get OS Name
-//-----------------------------------------------------------------------------------------------
+// Get OS Name UA sniffing
+//====================================================================
 function getOSName() {
     var osName = 'Unknown OS';
 
@@ -321,21 +321,17 @@ function checkDeviceSupport(callback) {
 }
 
 //检测是否支持getUserMedia
+//==============================================
 function checkGetUserMedia() {
 
     var getUserMediaSupport = false;
 
-    if (typeof navigator.webkitGetUserMedia !== 'undefined') {
-        navigator.getUserMedia = navigator.webkitGetUserMedia;
-    }
-
-    if (typeof navigator.mozGetUserMedia !== 'undefined') {
-        navigator.getUserMedia = navigator.mozGetUserMedia;
-    }
-
-    if (navigator.getUserMedia) {
+    //Chrome与Firefox
+    if (typeof navigator.webkitGetUserMedia !== 'undefined' || typeof navigator.mozGetUserMedia !== 'undefined') {
         getUserMediaSupport = true;
-    } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    }
+    //Firefox已支持
+    else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         getUserMediaSupport = true;
     }
 
@@ -343,53 +339,37 @@ function checkGetUserMedia() {
 }
 
 //检测是否支持RTCPeerConnection
+//===================================================
 function checkRTCPeerConnection() {
     var RTCPeerConnectionSupport = false;
-    ['RTCPeerConnection', 'webkitRTCPeerConnection', 'mozRTCPeerConnection'].forEach(function (item) {
-        if (RTCPeerConnectionSupport) {
-            return;
-        }
-
-        if (item in window) {
-            RTCPeerConnectionSupport = true;
-        }
+    RTCPeerConnectionSupport = ['RTCPeerConnection', 'webkitRTCPeerConnection', 'mozRTCPeerConnection'].some(function (item) {
+        return (item in window);
     });
     return RTCPeerConnectionSupport;
 }
 
+// 检测datahannel支持情况
+//==============================================
+
 function checkDataChannel() {
+
     var dataChannelSupport = false;
 
-    //used to have only one interface
-    window.RTCPeerConnection = window.RTCPeerConnection
-        || window.webkitRTCPeerConnection
-        || window.mozRTCPeerConnection;
-    window.RTCSessionDescription = window.RTCSessionDescription
-        || window.webkitRTCSessionDescription
-        || window.mozRTCSessionDescription;
-    window.RTCIceCandidate = window.RTCIceCandidate
-        || window.webkitRTCIceCandidate
-        || window.mozRTCIceCandidate;
+    try{
+        var PeerConnectionConstructor = window.RTCPeerConnection
+            || window.webkitRTCPeerConnection
+            || window.mozRTCPeerConnection;
 
-    (function () {
-        if (!!window.webkitRTCPeerConnection) { //must be chrome
-            var testPC = new window.RTCPeerConnection({iceServers: [{url: "stun:stunserver.org:3478"}]}, {optional: [{RtpDataChannels: true}]}),
-                dc;
-            if (testPC && testPC.createDataChannel) {
-                //Chrome doesn't support reliable DataChannels yet
-                dc = testPC.createDataChannel("testDataChannel", {reliable: false});
-                if (!!dc) {
-                    dataChannelSupport = true;
-                    dc.close();
-                }
-            }
-            testPC.close();
+        if (PeerConnectionConstructor) {
+            var peerConnection = new PeerConnectionConstructor({
+                'iceServers': [{'url': 'stun:0'}]
+            });
+
+            dataChannelSupport = 'createDataChannel' in peerConnection;
         }
-        else {
-            dataChannelSupport = window.RTCPeerConnection !== undefined
-                && window.DataChannel !== undefined;
-        }
-    }());
+    }catch (e){
+        dataChannelSupport = false;
+    }
 
     return dataChannelSupport;
 }

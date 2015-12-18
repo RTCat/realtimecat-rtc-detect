@@ -1,36 +1,25 @@
+// 检测datahannel支持情况
+//==============================================
+
 function checkDataChannel() {
+
     var dataChannelSupport = false;
 
-    //used to have only one interface
-    window.RTCPeerConnection = window.RTCPeerConnection
-        || window.webkitRTCPeerConnection
-        || window.mozRTCPeerConnection;
-    window.RTCSessionDescription = window.RTCSessionDescription
-        || window.webkitRTCSessionDescription
-        || window.mozRTCSessionDescription;
-    window.RTCIceCandidate = window.RTCIceCandidate
-        || window.webkitRTCIceCandidate
-        || window.mozRTCIceCandidate;
+    try{
+        var PeerConnectionConstructor = window.RTCPeerConnection
+            || window.webkitRTCPeerConnection
+            || window.mozRTCPeerConnection;
 
-    (function () {
-        if (!!window.webkitRTCPeerConnection) { //must be chrome
-            var testPC = new window.RTCPeerConnection({iceServers: [{url: "stun:stunserver.org:3478"}]}, {optional: [{RtpDataChannels: true}]}),
-                dc;
-            if (testPC && testPC.createDataChannel) {
-                //Chrome doesn't support reliable DataChannels yet
-                dc = testPC.createDataChannel("testDataChannel", {reliable: false});
-                if (!!dc) {
-                    dataChannelSupport = true;
-                    dc.close();
-                }
-            }
-            testPC.close();
+        if (PeerConnectionConstructor) {
+            var peerConnection = new PeerConnectionConstructor({
+                'iceServers': [{'url': 'stun:0'}]
+            });
+
+            dataChannelSupport = 'createDataChannel' in peerConnection;
         }
-        else {
-            dataChannelSupport = window.RTCPeerConnection !== undefined
-                && window.DataChannel !== undefined;
-        }
-    }());
+    }catch (e){
+        dataChannelSupport = false;
+    }
 
     return dataChannelSupport;
 }
