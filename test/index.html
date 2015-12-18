@@ -23,6 +23,7 @@
         output += 'Is WebSocket Supported: ' + RTCDetect.WebSocketSupport + '<br>';
         output += 'Is Screen Capturing Supported: ' + RTCDetect.screenCaputringSupport + '<br>';
         output += 'Is ORTC Supported: ' + RTCDetect.ORTCSupport + '<br>';
+        output += 'Is RTCat Supported: ' + RTCDetect.RTCatSupport + '<br>';
         document.getElementById('general').innerHTML = output;
         RTCDetect.checkDeviceSupport(function (error) {
             var output = 'Detecting Media Devices by RTCDetect:' + '<br>';

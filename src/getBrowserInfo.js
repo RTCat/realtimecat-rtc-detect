@@ -97,7 +97,7 @@ function getBrowserInfo() {
 
     if(isBaidu){
         browserName = 'Baidu';
-        fullVersion = parseInt(navigator.userAgent.match(/BIDUBrowser\/(\d+).(\d+)/)[2], 10).toString();
+        fullVersion = parseInt(navigator.userAgent.match(/BIDUBrowser\/(\d+).(\d+)/)[1], 10).toString();
     }
 
     if(isLiebao){

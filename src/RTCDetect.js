@@ -29,7 +29,7 @@ RTCDetect.WebSocketSupport = 'WebSocket' in window && 2 === window.WebSocket.CLO
 //检测是否支持屏幕分享功能
 //目前只有https下的35版本以上的chrome可以分享屏幕
 RTCDetect.screenCaputringSupport = false;
-if (RTCDetect.browser.isChrome && RTCDetect.browser.version >= 35) {
+if (RTCDetect.browser.isChrome && RTCDetect.browser.version >= 42) {
     RTCDetect.screenCaputringSupport = true;
 }
 if (!isHTTPs) {
@@ -46,7 +46,20 @@ RTCDetect.checkDeviceSupport = checkDeviceSupport;
 
 //TODO:检测是否支持RTCat
 RTCDetect.RTCatSupport = false;
-if (RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera) {
+//42版以上的chrome
+if(RTCDetect.browser.isChrome && RTCDetect.browser.version >= 42){
+    RTCDetect.RTCatSupport = true;
+}
+//38版以上的firefox
+else if ( RTCDetect.browser.isFirefox && RTCDetect.browser.version >= 38) {
+    RTCDetect.RTCatSupport = true;
+}
+//30版以上的Opera
+else if(RTCDetect.browser.isOpera && RTCDetect.browser.version >= 30){
+    RTCDetect.RTCatSupport = true;
+}
+//7以上的百度
+else if(RTCDetect.browser.isBaidu && RTCDetect.browser.version >= 7){
     RTCDetect.RTCatSupport = true;
 }
 
