@@ -15,26 +15,10 @@ RTCDetect.osName = getOSName();
 //===================================
 
 //检测是否支持getUserMedia
-
-// IE不支持
-if(RTCDetect.browser.isIE){
-    RTCDetect.getUserMediaSupport = false;
-}
-// 46版以上的chrome需要启用https
-else if (RTCDetect.browser.isChrome && RTCDetect.browser.version >= 46 && !isHTTPs) {
-    RTCDetect.getUserMediaSupport = 'Requires HTTPs';
-}
-// 其他通过featrue detect检测
-else{
-    RTCDetect.getUserMediaSupport = checkGetUserMedia();
-}
+RTCDetect.getUserMediaSupport = checkGetUserMedia();
 
 //检测是否支持RTCPeerConnection
-if(RTCDetect.isIE){
-    RTCDetect.RTCPeerConnectionSupport = false;
-}else{
-    RTCDetect.RTCPeerConnectionSupport = checkRTCPeerConnection();
-}
+RTCDetect.RTCPeerConnectionSupport = checkRTCPeerConnection();
 
 //检测是否支持DataChannel
 RTCDetect.dataChannelSupport = checkDataChannel();
@@ -52,21 +36,19 @@ if (!isHTTPs) {
     RTCDetect.screenCaputringSupport = false;
 }
 
-//TODO:检测是否支持RTCat
-RTCDetect.RTCatSupport = false;
-if (RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera) {
-    RTCDetect.RTCatSupport = true;
-}
-
 // ORTC相关
 //==================================
 //检测是否支持ORTC
 RTCDetect.ORTCSupport = typeof RTCIceGatherer !== 'undefined';
 
-//TODO:初始化
-RTCDetect.init = function (callback) {
-    checkDeviceSupport(callback);
-};
+//检查设备支持情况
+RTCDetect.checkDeviceSupport = checkDeviceSupport;
+
+//TODO:检测是否支持RTCat
+RTCDetect.RTCatSupport = false;
+if (RTCDetect.browser.isChrome || RTCDetect.browser.isFirefox || RTCDetect.browser.isOpera) {
+    RTCDetect.RTCatSupport = true;
+}
 
 
 

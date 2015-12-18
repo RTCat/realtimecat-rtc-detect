@@ -9,7 +9,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
     navigator.enumerateDevices = function (callback) {
         navigator.mediaDevices.enumerateDevices().then(callback);
     };
-    //TODO: Microsoft Edge上enumerateDevices方法有bug
 }
 
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
@@ -26,7 +25,7 @@ function checkDeviceSupport(callback) {
         navigator.enumerateDevices = navigator.enumerateDevices.bind(navigator);
     }
 
-    // 当浏览器不支持任何一种enumerateDevices方法时,抛出错误
+    // 当浏览器不支持任何一种enumerateDevices方法时
     if (!navigator.enumerateDevices) {
         if (typeof RTCDetect !== 'undefined') {
             RTCDetect.MediaDevices = MediaDevices;
@@ -35,82 +34,86 @@ function checkDeviceSupport(callback) {
             RTCDetect.hasWebcam = hasWebcam;
         }
         if (callback) {
-            callback(new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.'))
-        } else {
-            throw new Error('您的浏览器尚不支持检测设备的方法, Neither navigator.mediaDevices.enumerateDevices NOR MediaStreamTrack.getSources are available.');
+            callback(null)
         }
         return;
     }
 
     MediaDevices = [];
-    navigator.enumerateDevices(function (devices) {
-        devices.forEach(function (_device) {
-            var device = {};
-            for (var d in _device) {
-                device[d] = _device[d];
-            }
-
-            // if it is MediaStreamTrack.getSources
-            if (device.kind === 'audio') {
-                device.kind = 'audioinput';
-            }
-
-            if (device.kind === 'video') {
-                device.kind = 'videoinput';
-            }
-
-            var skip;
-            MediaDevices.forEach(function (d) {
-                if (d.id === device.id && d.kind === device.kind) {
-                    skip = true;
+    try {
+        navigator.enumerateDevices(function (devices) {
+            devices.forEach(function (_device) {
+                var device = {};
+                for (var d in _device) {
+                    device[d] = _device[d];
                 }
+
+                // if it is MediaStreamTrack.getSources
+                if (device.kind === 'audio') {
+                    device.kind = 'audioinput';
+                }
+
+                if (device.kind === 'video') {
+                    device.kind = 'videoinput';
+                }
+
+                var skip;
+                MediaDevices.forEach(function (d) {
+                    if (d.id === device.id && d.kind === device.kind) {
+                        skip = true;
+                    }
+                });
+
+                if (skip) {
+                    return;
+                }
+
+                if (!device.deviceId) {
+                    device.deviceId = device.id;
+                }
+
+                if (!device.id) {
+                    device.id = device.deviceId;
+                }
+
+                if (!device.label) {
+                    device.label = 'Please invoke getUserMedia once.';
+                    if (!isHTTPs) {
+                        device.label = 'HTTPs is required to get label of this ' + device.kind + ' device.';
+                    }
+                }
+
+                if (device.kind === 'audioinput') {
+                    hasMicrophone = true;
+                }
+
+                if (device.kind === 'audiooutput') {
+                    hasSpeakers = true;
+                }
+
+                if (device.kind === 'videoinput') {
+                    hasWebcam = true;
+                }
+
+                // there is no 'videoouput' in the spec.
+
+                MediaDevices.push(device);
             });
 
-            if (skip) {
-                return;
+            if (typeof RTCDetect !== 'undefined') {
+                RTCDetect.MediaDevices = MediaDevices;
+                RTCDetect.hasMicrophone = hasMicrophone;
+                RTCDetect.hasSpeakers = hasSpeakers;
+                RTCDetect.hasWebcam = hasWebcam;
             }
-
-            if (!device.deviceId) {
-                device.deviceId = device.id;
+            if (callback) {
+                callback(null);
             }
-
-            if (!device.id) {
-                device.id = device.deviceId;
-            }
-
-            if (!device.label) {
-                device.label = 'Please invoke getUserMedia once.';
-                if (!isHTTPs) {
-                    device.label = 'HTTPs is required to get label of this ' + device.kind + ' device.';
-                }
-            }
-
-            if (device.kind === 'audioinput') {
-                hasMicrophone = true;
-            }
-
-            if (device.kind === 'audiooutput') {
-                hasSpeakers = true;
-            }
-
-            if (device.kind === 'videoinput') {
-                hasWebcam = true;
-            }
-
-            // there is no 'videoouput' in the spec.
-
-            MediaDevices.push(device);
         });
-
-        if (typeof RTCDetect !== 'undefined') {
-            RTCDetect.MediaDevices = MediaDevices;
-            RTCDetect.hasMicrophone = hasMicrophone;
-            RTCDetect.hasSpeakers = hasSpeakers;
-            RTCDetect.hasWebcam = hasWebcam;
-        }
-
+    } catch (e) {
+        //Microsoft Edge上enumerateDevices方法可能抛出错误
         if (callback) {
-            callback(null);
+            callback(e);
         }
-    });
+    }
 }
