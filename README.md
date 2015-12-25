@@ -8,7 +8,7 @@
 
 与实时猫SDK结合
 ```javascript
-var RTCDetect = require('./src/RTCDetect')
+var RTCDetect = require('rtc-detect')
 RTCDetect.browser.name
 ...
 ```
