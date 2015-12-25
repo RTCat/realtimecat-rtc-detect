@@ -4,6 +4,8 @@ var hasMicrophone = false;
 var hasSpeakers = false;
 var hasWebcam = false;
 
+var isHTTPs = location.protocol === 'https:';
+
 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
     // Firefox 38+, Microsoft Edge, and Chrome 44+ seems having support of enumerateDevices
     navigator.enumerateDevices = function (callback) {
@@ -13,7 +15,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
 
 // http://dev.w3.org/2011/webrtc/editor/getusermedia.html#mediadevices
 // TODO: switch to enumerateDevices when landed in canary.
-function checkDeviceSupport(callback) {
+module.exports = function (callback) {
 
     // enumerateDevices方法shim
     // 当MediaStreamTrack.getSources可用时,用getSources方法
@@ -27,14 +29,14 @@ function checkDeviceSupport(callback) {
 
     // 当浏览器不支持任何一种enumerateDevices方法时
     if (!navigator.enumerateDevices) {
-        if (typeof RTCDetect !== 'undefined') {
-            RTCDetect.MediaDevices = MediaDevices;
-            RTCDetect.hasMicrophone = hasMicrophone;
-            RTCDetect.hasSpeakers = hasSpeakers;
-            RTCDetect.hasWebcam = hasWebcam;
-        }
+        var results = {
+            MediaDevices: MediaDevices,
+            hasMicrophone: hasMicrophone,
+            hasSpeakers: hasSpeakers,
+            hasWebcam: hasWebcam
+        };
         if (callback) {
-            callback(null)
+            callback(null, results)
         }
         return;
     }
@@ -100,14 +102,15 @@ function checkDeviceSupport(callback) {
                 MediaDevices.push(device);
             });
 
-            if (typeof RTCDetect !== 'undefined') {
-                RTCDetect.MediaDevices = MediaDevices;
-                RTCDetect.hasMicrophone = hasMicrophone;
-                RTCDetect.hasSpeakers = hasSpeakers;
-                RTCDetect.hasWebcam = hasWebcam;
-            }
+            var results = {
+                MediaDevices: MediaDevices,
+                hasMicrophone: hasMicrophone,
+                hasSpeakers: hasSpeakers,
+                hasWebcam: hasWebcam
+            };
+            
             if (callback) {
-                callback(null);
+                callback(null, results)
             }
         });
     } catch (e) {
@@ -116,4 +119,4 @@ function checkDeviceSupport(callback) {
             callback(e);
         }
     }
-}
+};

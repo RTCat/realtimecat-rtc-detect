@@ -1,6 +1,6 @@
 // Get OS Name UA sniffing
 //====================================================================
-function getOSName() {
+module.exports = function () {
     var osName = 'Unknown OS';
 
     var isMobile = {

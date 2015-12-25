@@ -1,11 +1,11 @@
 // 检测datahannel支持情况
 //==============================================
 
-function checkDataChannel() {
+module.exports = function () {
 
     var dataChannelSupport = false;
 
-    try{
+    try {
         var PeerConnectionConstructor = window.RTCPeerConnection
             || window.webkitRTCPeerConnection
             || window.mozRTCPeerConnection;
@@ -17,9 +17,9 @@ function checkDataChannel() {
 
             dataChannelSupport = 'createDataChannel' in peerConnection;
         }
-    }catch (e){
+    } catch (e) {
         dataChannelSupport = false;
     }
 
     return dataChannelSupport;
-}
+};

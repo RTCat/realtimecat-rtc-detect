@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RTC Detect Standalone Test</title>
-    <script src="../dist/rtc-detect.min.js"></script>
+    <title>RTCDetect Require JS Test</title>
+    <script src="//cdn.bootcss.com/require.js/2.1.22/require.js"></script>
 </head>
 <body>
 
@@ -12,6 +12,7 @@
 <div id="devices"></div>
 
 <script>
+    require(['../dist/rtc-detect.min'], function(RTCDetect){
         var output = 'Detecting browsers by RTCDetect:<hr>';
         output += 'Browser: ' + RTCDetect.browser.name + '<br>';
         output += 'Version: ' + RTCDetect.browser.version + '<br>';
@@ -45,6 +46,8 @@
             output += '</pre>';
             document.getElementById('devices').innerHTML = output;
         });
+    })
 </script>
+
 </body>
 </html>

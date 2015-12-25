@@ -1,7 +1,7 @@
 // 获取浏览器信息 UA sniffing
 //==============================================
 
-function getBrowserInfo() {
+module.exports = function () {
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
     var browserName = navigator.appName;
@@ -126,4 +126,4 @@ function getBrowserInfo() {
         version: majorVersion,
         name: browserName
     };
-}
+};

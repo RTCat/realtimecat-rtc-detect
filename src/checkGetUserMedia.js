@@ -1,6 +1,6 @@
 //检测是否支持getUserMedia
 //==============================================
-function checkGetUserMedia() {
+module.exports = function () {
 
     var getUserMediaSupport = false;
 
@@ -14,4 +14,5 @@ function checkGetUserMedia() {
     }
 
     return getUserMediaSupport;
-}
+
+};

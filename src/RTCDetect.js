@@ -1,4 +1,11 @@
-var RTCDetect = window.RTCDetect = {};
+var getBrowserInfo = require('./getBrowserInfo');
+var getOSName = require("./getOSName");
+var checkGetUserMedia = require("./checkGetUserMedia");
+var checkRTCPeerConnection = require("./checkRTCPeerConnection");
+var checkDataChannel = require("./checkDataChannel");
+var checkDeviceSupport = require("./checkDeviceSupport");
+
+var RTCDetect = {};
 
 var isHTTPs = location.protocol === 'https:';
 
@@ -63,5 +70,6 @@ else if(RTCDetect.browser.isBaidu && RTCDetect.browser.version >= 7){
     RTCDetect.RTCatSupport = true;
 }
 
+module.exports = RTCDetect;
 
 
