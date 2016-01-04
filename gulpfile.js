@@ -33,9 +33,9 @@ gulp.task('build', ['clean'], function () {
         .pipe(sourcemaps.init({loadMaps: true}))
         // Add transformation tasks to the pipeline here.
         .pipe(uglify())
-        .on('error', gutil.log)
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./dist/'));
+        .pipe(gulp.dest('./dist/'))
+        .on('error', gutil.log);
 
     return standalone;
 
