@@ -13,6 +13,10 @@
     "browser",
     "webrtc"
   ],
+  "repository":{
+    "type":"git",
+    "url":"git+https://github.com/RTCat/realtimecat-rtc-detect.git"
+  },
   "author": "Yi Kai",
   "license": "ISC",
   "devDependencies": {
