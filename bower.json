@@ -1,0 +1,27 @@
+{
+  "name": "realtimecat-rtc-detect",
+  "version": "0.1.0",
+  "description": "detect browsers' info and webrtc compatibility",
+  "main": "./src/RTCDetect.js",
+  "authors": [
+    "Yi Kai"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "realtimecat",
+    "detect",
+    "browser",
+    "webrtc"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "homepage": "https://shishimao.com",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
