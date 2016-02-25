@@ -1,5 +1,5 @@
 {
-  "name": "rtc-detect",
+  "name": "realtimecat-rtc-detect",
   "version": "0.1.0",
   "description": "detect browsers' info and webrtc compatibility",
   "main": "./src/RTCDetect.js",
